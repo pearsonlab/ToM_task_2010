@@ -66,6 +66,10 @@ def split_trials_and_means(df):
     return dfs
 
 def plotting_rt_resps(dfs, timeout_count, total_mental, total_exp, file):
+
+	if not os.path.exists('data/images'):
+		os.makedirs('data/images')
+    
     if dfs != ":-(":
         for df in dfs:
             fig, ax = plt.subplots()

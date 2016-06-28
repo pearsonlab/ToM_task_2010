@@ -183,6 +183,9 @@ def run():
 		else:
 			trial_dict['response_time'] = 'timeout'
 
+		if not os.path.exists('behavioral/'):
+			os.makedirs('behavioral')
+	
 		with open('behavioral/' + expname + '_' + str(sid)+ '.json', 'a') as f:
 			f.write(json.dumps(trial_dict))
 			f.write('\n')
