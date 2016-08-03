@@ -27,12 +27,17 @@ class Stimuli:
     def show_question(self, trial):
         quest_start = core.getTime()
         text = self.text("How likely is it that...\n\n" + trial.decode('utf-8'))
+        scale = self.text('       1         -         2         -         3         -         4 \n\n'+
+                                '(Very Unlikely)                                     (Very Likely)')
+        scale.pos = (0, -0.75)
+        scale.height = 0.05
         self.win.flip()
         offset = flicker(self.win, 4)
         key = event.waitKeys(
                     maxWait=self.timing['question'] - offset, keyList=self.keymap.keys() + ['escape'])
+        text.autoDraw = False
+        scale.autoDraw=False
         if key is None:
-            text.autoDraw = False
             self.win.flip()
             self.win.flip()
             return(quest_start, 'timeout', 'timeout')
@@ -40,12 +45,12 @@ class Stimuli:
             flicker(self.win, 0)
             core.quit()
         else:
-            text.autoDraw = False
+            self.win.clearBuffer()
             self.win.flip()
             self.win.flip()
             time_of_resp = core.getTime()
             offset = flicker(self.win, 16)
-            self.win.flip()  # TODO: outcome period
+            self.win.flip()
             return (quest_start, self.keymap[key[0]], time_of_resp)
 
     def text_and_stim_keypress(self, text, stim=None):
@@ -102,9 +107,9 @@ def run():
 
     win = get_window()
     timing = {'fixation': 4.,
-                'story': (6.*speed),
-                'question': (6.*speed),
-                'delay': 4.}
+                'story': (4.*speed),
+                'question': (10.*speed),
+                'delay': 2.}
 
     win.mouseVisible = False
 
