@@ -6,7 +6,7 @@ import numpy as np
 import os
 from datetime import datetime
 
-from utils import flicker
+from utils import Flicker
 
 class Stimuli:
     def __init__(self, win, timing, subjnum):
@@ -14,12 +14,14 @@ class Stimuli:
         self.timing = timing
         self.keymap = {'1': 1, '2': 2, '3': 3, '4': 4}
         self.subjnum = subjnum
+        self.trigger = Flicker(self.win)
+
 
     def show_story(self, trial):
         story_start = core.getTime()
         text = self.text(trial.decode('utf-8'))
         self.win.flip()
-        offset = flicker(self.win, 1)
+        offset = self.trigger.flicker_block(1)
         core.wait(self.timing['story'] - offset)
         text.autoDraw = False
         self.win.flip()
@@ -34,7 +36,7 @@ class Stimuli:
         scale.pos = (0, -0.75)
         scale.height = 0.05
         self.win.flip()
-        offset = flicker(self.win, 4)
+        offset = self.trigger.flicker_block(4)
         key = event.waitKeys(
                     maxWait=self.timing['question'] - offset, keyList=self.keymap.keys() + ['escape'])
         text.autoDraw = False
@@ -44,7 +46,7 @@ class Stimuli:
             self.win.flip()
             return(quest_start, 'timeout', 'timeout')
         elif 'escape' in key:
-            flicker(self.win, 0)
+            self.trigger.flicker_block(0)
             
             # Save end data
             t = datetime.now()
@@ -58,7 +60,7 @@ class Stimuli:
             self.win.flip()
             self.win.flip()
             time_of_resp = core.getTime()
-            offset = flicker(self.win, 16)
+            offset = self.trigger.flicker_block(16)
             self.win.flip()
             return (quest_start, self.keymap[key[0]], time_of_resp)
 
@@ -78,7 +80,7 @@ class Stimuli:
         self.win.flip()
         key = event.waitKeys()
         if key[0] == 'escape':
-            flicker(self.win, 0)
+            self.trigger.flicker_block(0)
             core.quit()
             self.win.flip()
         self.win.flip()
