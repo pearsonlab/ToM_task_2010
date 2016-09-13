@@ -108,7 +108,7 @@ def get_settings():
     dlg.addField('Experiment Name:', 'ToM_Task_2010')
     dlg.addField('Subject ID:', '0')
     dlg.addField('Speed Factor:', 1.0)
-    dlg.addField('Start Number:', 0)
+    dlg.addField('Number of Stories:', 48)
     dlg.show()
     if dlg.OK:
         return dlg.data
@@ -134,7 +134,7 @@ def get_window():
         fullscr=True, colorSpace='rgb255', color=(0, 0, 0))
 
 def run():
-    (expname, sid, speed, start_num) = get_settings()
+    (expname, sid, speed, num_stories) = get_settings()
 
     # Starting timers and save initial information
     global globalTimer
@@ -188,41 +188,44 @@ def run():
     # Two random arrays of 0s and 1s as counters
     condition = np.random.randint(0, 2, 48) # expected (0) or unexpected (1)
     state = np.random.randint(0, 2, 48) # mental (0) or physical (1)
+    story = np.random.choice(48, size=num_stories, replace=False)
+    
+    line_counter = 0
 
-    line_counter = start_num
-
-    while line_counter < 48:
+    while line_counter < num_stories:
         trial_dict = {}
         trial_dict['trial_num'] = line_counter+1
+        story_num = story[line_counter]
 
-        if condition[line_counter] == 0:
+        if condition[story_num] == 0:
             trial_dict['condition'] = 'expected'
 
-            if state[line_counter] == 0:
+            if state[story_num] == 0:
                 trial_dict['state'] = 'mental'
-                story_start = stim.show_story(mental_exp[line_counter])
-                quest_start, resp, time_resp = stim.show_question(mental_quest[line_counter])
+                story_start = stim.show_story(mental_exp[story_num])
+                quest_start, resp, time_resp = stim.show_question(mental_quest[story_num])
             else:
                 trial_dict['state'] = 'physical'
-                story_start = stim.show_story(physical_exp[line_counter])
-                quest_start, resp, time_resp = stim.show_question(physical_quest[line_counter])
+                story_start = stim.show_story(physical_exp[story_num])
+                quest_start, resp, time_resp = stim.show_question(physical_quest[story_num])
 
         else:
             trial_dict['condition'] = 'unexpected'
 
-            if state[line_counter] == 0:
+            if state[story_num] == 0:
                 trial_dict['state'] = 'mental'
-                story_start = stim.show_story(mental_unexp[line_counter])
-                quest_start, resp, time_resp = stim.show_question(mental_quest[line_counter])
+                story_start = stim.show_story(mental_unexp[story_num])
+                quest_start, resp, time_resp = stim.show_question(mental_quest[story_num])
             else:
                 trial_dict['state'] = 'physical'
-                story_start = stim.show_story(physical_unexp[line_counter])
-                quest_start, resp, time_resp = stim.show_question(physical_quest[line_counter])
+                story_start = stim.show_story(physical_unexp[story_num])
+                quest_start, resp, time_resp = stim.show_question(physical_quest[story_num])
 
         trial_dict['story_start'] = story_start
         trial_dict['quest_start'] = quest_start
         trial_dict['response'] = resp
         trial_dict['time_of_response'] = time_resp
+        trial_dict['story_num'] = story_num
 
         if time_resp != 'timeout':
             trial_dict['response_time'] = time_resp - quest_start
