@@ -42,9 +42,11 @@ class Stimuli:
         text.autoDraw = False
         scale.autoDraw=False
         if key is None:
+            time_of_resp = core.getTime()
+            offset = self.trigger.flicker_block(32)
             self.win.flip()
             self.win.flip()
-            return(quest_start, 'timeout', 'timeout')
+            return(quest_start, 'timeout', time_of_resp)
         elif 'escape' in key:
             self.trigger.flicker_block(0)
             
@@ -224,13 +226,10 @@ def run():
         trial_dict['story_start'] = story_start
         trial_dict['quest_start'] = quest_start
         trial_dict['response'] = resp
-        trial_dict['time_of_response'] = time_resp
+        trial_dict['time_of_resp'] = time_resp
         trial_dict['story_num'] = story_num
 
-        if time_resp != 'timeout':
-            trial_dict['response_time'] = time_resp - quest_start
-        else:
-            trial_dict['response_time'] = 'timeout'
+        trial_dict['resp_time'] = time_resp - quest_start
 
         if not os.path.exists('behavioral/'):
             os.makedirs('behavioral')
